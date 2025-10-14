@@ -1,13 +1,14 @@
 import { SORT_OPTIONS, type SortBy, type User } from "../types";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 
 interface TableProps {
     users: User[];
     setSort: React.Dispatch<React.SetStateAction<SortBy>>;
     showColors: boolean;
+    onDeleteUser: (userId: string) => void;
 }
 
-export const Table = ({users, setSort, showColors}: TableProps) =>{
+export const Table = ({users, setSort, showColors, onDeleteUser}: TableProps) =>{
 
     return(
         <table className="table-auto m-5 w-full border-separate border-spacing-y-2">
@@ -46,7 +47,7 @@ export const Table = ({users, setSort, showColors}: TableProps) =>{
                         <td>{user.lastName}</td>
                         <td>{user.country}</td>
                         <td>
-                           <Button onClick={()=>{}} title="Borrar" />
+                           <Button onClick={() => onDeleteUser(user.id)} title="Borrar" />
                         </td>
                     </tr>
                 ))}

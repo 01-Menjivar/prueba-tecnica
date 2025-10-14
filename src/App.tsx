@@ -3,7 +3,7 @@ import { Table } from "./components/Table"
 import { useUsers } from "./hooks/useUsers"
 import { type UserApiResponse, type SortBy, SORT_OPTIONS, type User } from "./types"
 import { sortFunctions } from "./utils/sort"
-import { Button } from "./ui/button"
+import { Button } from "./ui/Button"
 
 function App() {
   const { data: users } = useUsers(100)
@@ -11,6 +11,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const [showColors, setShowColors] = useState(false)
+  const [deletedUserIds, setDeletedUserIds] = useState<Set<string>>(new Set())
 
   const processedUsers = useMemo(() => {
     if (!users) return []
@@ -23,6 +24,9 @@ function App() {
       country: user.location.country
     }))
 
+    // Filter out soft-deleted users
+    result = result.filter((user: User) => !deletedUserIds.has(user.id))
+
     if (searchTerm) {
       result = result.filter((user: User) =>
         user.country.toLowerCase().includes(searchTerm.toLowerCase())
@@ -32,7 +36,18 @@ function App() {
     }
 
     return result
-  }, [users, sort, searchTerm])
+  }, [users, sort, searchTerm, deletedUserIds])
+
+  const handleDeleteUser = (userId: string) => {
+    setDeletedUserIds(prev => new Set(prev).add(userId))
+  }
+
+  const handleResetStates = () => {
+    setSort(SORT_OPTIONS.NONE)
+    setDeletedUserIds(new Set())
+    setSearchTerm('')
+    setShowColors(false)
+  }
 
   return (
     <main>
@@ -47,7 +62,7 @@ function App() {
           onClick={() => { setSort(SORT_OPTIONS.COUNTRY) }}
           title="Ordernar por país" />
         <Button
-          onClick={() => { setSort(SORT_OPTIONS.NONE) }}
+          onClick={handleResetStates}
           title="Resetear estados" />
         <input
           value={searchTerm}
@@ -55,7 +70,7 @@ function App() {
           className="border-1 py-2 px-4 border-gray-400 rounded-sm"
           placeholder="Filtrar por país" type="text" />
       </div>
-      <Table users={processedUsers} setSort={setSort} showColors={showColors} />
+      <Table users={processedUsers} setSort={setSort} showColors={showColors} onDeleteUser={handleDeleteUser} />
     </main>
   )
 }
