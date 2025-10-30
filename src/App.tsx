@@ -7,7 +7,7 @@ import { Button } from "./ui/Button"
 
 function App() {
   const { data: users } = useUsers(100)
-  const [sort, setSort] = useState<SortBy>('none')
+  const [sort, setSort] = useState<SortBy>(SORT_OPTIONS.NONE)
   const [searchTerm, setSearchTerm] = useState('')
 
   const [showColors, setShowColors] = useState(false)
@@ -24,7 +24,6 @@ function App() {
       country: user.location.country
     }))
 
-    // Filter out soft-deleted users
     result = result.filter((user: User) => !deletedUserIds.has(user.id))
 
     if (searchTerm) {
@@ -32,7 +31,7 @@ function App() {
         user.country.toLowerCase().includes(searchTerm.toLowerCase())
       )
     } else {
-      result = [...result].sort(sortFunctions[sort])
+      result = result.sort(sortFunctions[sort])
     }
 
     return result
@@ -56,10 +55,10 @@ function App() {
       </header>
       <div className="flex justify-center gap-2">
         <Button
-          onClick={() => { setShowColors(!showColors) }}
+          onClick={() => setShowColors(!showColors)}
           title="Colorear filas" />
         <Button
-          onClick={() => { setSort(SORT_OPTIONS.COUNTRY) }}
+          onClick={() => setSort(SORT_OPTIONS.COUNTRY)}
           title="Ordernar por país" />
         <Button
           onClick={handleResetStates}
