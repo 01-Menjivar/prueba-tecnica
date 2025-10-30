@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Table } from "./components/Table"
 import { useUsers } from "./hooks/useUsers"
 import { type UserApiResponse, type SortBy, SORT_OPTIONS, type User } from "./types"
@@ -13,7 +13,7 @@ function App() {
   const [showColors, setShowColors] = useState(false)
   const [deletedUserIds, setDeletedUserIds] = useState<Set<string>>(new Set())
 
-  const processedUsers = useMemo(() => {
+  const processedUsers = () => {
     if (!users) return []
 
     let result = users.map((user: UserApiResponse) => ({
@@ -35,7 +35,7 @@ function App() {
     }
 
     return result
-  }, [users, sort, searchTerm, deletedUserIds])
+  }
 
   const handleDeleteUser = (userId: string) => {
     setDeletedUserIds(prev => new Set(prev).add(userId))
@@ -66,10 +66,10 @@ function App() {
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border-1 py-2 px-4 border-gray-400 rounded-sm"
+          className="border py-2 px-4 border-gray-400 rounded-sm"
           placeholder="Filtrar por país" type="text" />
       </div>
-      <Table users={processedUsers} setSort={setSort} showColors={showColors} onDeleteUser={handleDeleteUser} />
+      <Table users={processedUsers()} setSort={setSort} showColors={showColors} onDeleteUser={handleDeleteUser} />
     </main>
   )
 }
